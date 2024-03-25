@@ -36,16 +36,22 @@ class BinomialHeap<K> {
      */
     boolean isHeap() {
         BinomialHeap<K> other = PList.getFirst(this.children);
-        if(lessEq.test(other.key, this.key)){
+        /*if(lessEq.test(other.key, this.key)){
             return false;
         }
         if(lessEq.test(this.key, other.key)){
+            return other.isHeap();
+        }*/
+        if(lessEq.test(this.key, other.key)){
+            return false;
+        }
+        if(lessEq.test(other.key, this.key)){
             return other.isHeap();
         }
         else if(lessEq.equals(other.lessEq)){
             return other.isHeap();
         }
-        return true;  // replace this line with your code
+        return true;
     }
 
     public String toString() {
@@ -89,22 +95,27 @@ public class BinomialQueue<K> {
      * satisfies the heap property.
      */
     public boolean isHeap() {
+        /*System.out.printf("Forest: \n" + forest + "\n");*/
         /*First heap in the forest*/
         PList<BinomialHeap<K>> first = forest;
         /*Next heap after the first one*/
-        PList<BinomialHeap<K>> other = PList.getNext(forest);
+        PList<BinomialHeap<K>> other;
+        if(forest == null){
+            other = null;
+        }
+        else{
+            other = PList.getNext(forest);
+        }
 
         while(other != null){
             /*Creating these variables to avoid calling "Plist.getFirst" at every if statement in the loop
             * which I think will save run time? unsure*/
-            K firstKey = PList.getFirst(first).key;
-            K otherKey = PList.getFirst(other).key;
-            System.out.printf("Forest: \n" + forest + "\n");
-            System.out.printf("First: \n" + first + "\n");
-            System.out.printf("First Key: \n" + firstKey + "\n");
-            System.out.printf("Other: \n" + other + "\n");
-            System.out.printf("Other Key: \n" + otherKey + "\n");
-            if(lessEq.test(firstKey, otherKey)){
+            int firstHeight = PList.getFirst(first).height;
+            int otherHeight = PList.getFirst(other).height;
+            /*System.out.printf("First: \n" + first + "\n");
+            System.out.printf("First Height: \n" + firstHeight + "\n");
+            System.out.printf("Other Height: \n" + otherHeight + "\n");*/
+            if(firstHeight > otherHeight){
                 return false;
             }
             first = other;
@@ -141,7 +152,11 @@ public class BinomialQueue<K> {
             ns = PList.addFront(n, null);
             return ns;
         }
-        if(n.height == PList.getFirst(ns).height){
+        if(n.height < PList.getFirst(ns).height){
+            ns = PList.addFront(n, ns);
+            return ns;
+        }
+        else if(n.height == PList.getFirst(ns).height){
             n = n.link(PList.getFirst(ns));
             ns = PList.remove(PList.getFirst(ns), ns);
             ns = PList.addFront(n, ns);
